@@ -1,9 +1,7 @@
 package app.streats.client.feature_auth.presentation.login_screen
 
-import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.streats.client.core.presentation.events.UIEvent
@@ -12,21 +10,15 @@ import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.util.AuthConstants
 import app.streats.client.feature_home.util.HomeScreens
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
-    private val sharedPreferences: SharedPreferences,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -49,7 +41,7 @@ class LoginScreenViewModel @Inject constructor(
 
                 is LoginEvent.Logout -> {
                     _loginState.value = LoginState(isLoggedIn = false)
-                    logout(firebaseAuth)
+                    logout()
                 }
             }
         }
@@ -79,8 +71,7 @@ class LoginScreenViewModel @Inject constructor(
         }
     }
 
-    private fun logout(firebaseAuth: FirebaseAuth) {
-        firebaseAuth.signOut()
-
+    private fun logout() {
+        authRepository.logout()
     }
 }
