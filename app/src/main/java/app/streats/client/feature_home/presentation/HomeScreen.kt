@@ -9,10 +9,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.google.firebase.auth.FirebaseAuth
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = hiltViewModel()) {
     Surface(modifier = Modifier.fillMaxSize()) {
 
         Column(
@@ -21,7 +21,7 @@ fun HomeScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("HomeScreen")
-            Button(onClick = { FirebaseAuth.getInstance().signOut() }) {
+            Button(onClick = { homeScreenViewModel.logout() }) {
 
             }
         }
