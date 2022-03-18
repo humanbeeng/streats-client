@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "651596446659",
+    "project_id": "streats-app",
+    "storage_bucket": "streats-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651596446659:android:432cd4ec9b088885eb5b76",
+        "android_client_info": {
+          "package_name": "app.streats.client"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "651596446659-0tr354v1q73h0gio8v8pr9hcjiltoir2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.streats.client",
+            "certificate_hash": "403d1332d6c1ddf5a942b8724e6383fcd51c661b"
+          }
+        },
+        {
+          "client_id": "651596446659-7r5cfg04ovk90dgptleibge84sar8ncq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCprG-kqK3388ZG9JNfk0tPhYZhE4FQtvs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "651596446659-7r5cfg04ovk90dgptleibge84sar8ncq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
