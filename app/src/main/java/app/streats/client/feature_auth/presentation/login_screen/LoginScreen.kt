@@ -1,6 +1,5 @@
 package app.streats.client.feature_auth.presentation.login_screen
 
-import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
@@ -17,9 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import app.streats.client.core.presentation.events.UIEvent
 import app.streats.client.feature_auth.data.contracts.AuthContract
-import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
@@ -60,9 +56,6 @@ fun LoginScreen(
 
             }
 
-            Button(onClick = { FirebaseAuth.getInstance().signOut() }) {
-                Text(text = "Logout")
-            }
 
             if (loginState.isLoading) {
                 CircularProgressIndicator()
