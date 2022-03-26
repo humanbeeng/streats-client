@@ -1,5 +1,6 @@
 package app.streats.client.feature_auth.presentation.login_screen
 
+import android.content.SharedPreferences
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -10,16 +11,21 @@ import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.util.AuthConstants
 import app.streats.client.feature_home.util.HomeScreens
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginScreenViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val _outgoingEventFlow = MutableSharedFlow<UIEvent>()
@@ -50,23 +56,50 @@ class LoginScreenViewModel @Inject constructor(
 
 
     private fun login(task: Task<GoogleSignInAccount>?) {
-        viewModelScope.launch {
-            when (val loginResult = authRepository.loginWithGoogle(task)) {
-                is Resource.Loading -> {
-                    _loginState.value = LoginState(isLoading = true)
+        val googleSignInAccount = task?.getResult(ApiException::class.java)
+        if (googleSignInAccount != null) {
+            val idToken = task.result.idToken!!
+            val credentials = GoogleAuthProvider.getCredential(idToken, null)
+
+            FirebaseAuth.getInstance().signInWithCredential(credentials)
+                .addOnCompleteListener { signInWithCredentialTask ->
+                    if (signInWithCredentialTask.isSuccessful) {
+
+                        FirebaseAuth.getInstance().currentUser?.getIdToken(false)
+                            ?.addOnCompleteListener { idTokenTask ->
+
+                                if (idTokenTask.isSuccessful) {
+                                    val token = idTokenTask.result.token!!
+                                    viewModelScope.launch {
+                                        when (authRepository.verifyToken(token)) {
+                                            is Resource.Error -> {
+                                            }
+                                            is Resource.Success -> {
+                                                _outgoingEventFlow.emit(UIEvent.Navigate(HomeScreens.HomeScreen.route))
+                                            }
+                                            is Resource.Loading -> {
+
+                                            }
+                                        }
+                                    }
+
+                                    Timber.d("Sign in with credentials success. ")
+                                } else {
+                                    sharedPreferences.edit()
+                                        .putString(AuthConstants.GOOGLE_SIGN_IN_TOKEN_PREF, "")
+                                        .apply()
+                                    Timber.e("Sign in failed while fetching token.")
+
+                                }
+                            }
+                    } else {
+                        sharedPreferences.edit()
+                            .putString(AuthConstants.GOOGLE_SIGN_IN_TOKEN_PREF, "").apply()
+                        Timber.e("Sign in with credentials failed!")
+                    }
 
                 }
-
-                is Resource.Success -> {
-                    _loginState.value = LoginState(isLoading = false, isLoggedIn = true)
-                    _outgoingEventFlow.emit(UIEvent.Navigate(HomeScreens.HomeScreen.route))
-                }
-
-                is Resource.Error -> {
-                    _loginState.value =
-                        LoginState(error = loginResult.message ?: AuthConstants.ERROR_STRING)
-                }
-            }
+        } else {
 
         }
     }
@@ -74,4 +107,6 @@ class LoginScreenViewModel @Inject constructor(
     private fun logout() {
         authRepository.logout()
     }
+
+
 }

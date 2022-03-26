@@ -1,8 +1,7 @@
 package app.streats.client.di
 
 import app.streats.client.core.util.Constants
-import app.streats.client.feature_auth.data.AuthApi
-import com.google.firebase.auth.FirebaseAuth
+import app.streats.client.feature_home.data.HomeApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,14 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AuthModule {
-
-    @Provides
-    @Singleton
-    fun providesFirebaseAuth(): FirebaseAuth {
-        return FirebaseAuth.getInstance()
-    }
-
+object HomeModule {
     private val httpLoggingInterceptor =
         HttpLoggingInterceptor().setLevel(level = HttpLoggingInterceptor.Level.BASIC)
 
@@ -30,12 +22,12 @@ object AuthModule {
 
     @Singleton
     @Provides
-    fun provideAuthApi(): AuthApi {
+    fun provideHomeApi(): HomeApi {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(Constants.SERVER_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
-            .create(AuthApi::class.java)
+            .create(HomeApi::class.java)
     }
 }
