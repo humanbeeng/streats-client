@@ -111,5 +111,10 @@ dependencies {
 //    Jetpack Datastore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
+//    Shimmer
+    implementation 'com.valentinilk.shimmer:compose-shimmer:1.0.2'
+
+
+
 
 }
