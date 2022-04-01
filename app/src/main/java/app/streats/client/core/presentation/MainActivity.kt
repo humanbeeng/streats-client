@@ -90,18 +90,6 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun CartScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Cart Screen")
-    }
-}
-
-
-@Composable
 fun OrderScreen() {
     Column(
         modifier = Modifier.fillMaxSize(),
