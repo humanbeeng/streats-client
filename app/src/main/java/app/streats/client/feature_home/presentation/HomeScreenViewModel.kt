@@ -43,7 +43,7 @@ class HomeScreenViewModel @Inject constructor(
                 is Resource.Error -> {
                     _homeState.value = HomeScreenState(
                         isLoading = false,
-                        error = state.message ?: HomeConstants.HOME_ERROR_MESSAGE
+                        error = HomeConstants.HOME_ERROR_MESSAGE
                     )
                 }
 
