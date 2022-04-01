@@ -20,13 +20,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = hiltViewModel()) {
 
+    val homeScreenState = homeScreenViewModel.homeState.value
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val homeScreenState = homeScreenViewModel.homeState.value
         Text("HomeScreen")
         Button(onClick = { homeScreenViewModel.logout() }) {
             Text(text = "Logout")
