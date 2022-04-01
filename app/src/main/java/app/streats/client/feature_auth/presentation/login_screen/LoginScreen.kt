@@ -2,20 +2,21 @@ package app.streats.client.feature_auth.presentation.login_screen
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Card
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import app.streats.client.core.presentation.events.UIEvent
 import app.streats.client.feature_auth.data.contracts.AuthContract
+import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
@@ -51,14 +52,22 @@ fun LoginScreen(
             }
 
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-            Button(onClick = { authResultLauncher.launch(1) }) {
+            Button(modifier = Modifier.shadow(4.dp), onClick = { authResultLauncher.launch(1) }) {
                 Text(text = "Continue with Google")
 
             }
 
 
             if (loginState.isLoading) {
-                CircularProgressIndicator()
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .shadow(4.dp)
+                        .shimmer()
+                ) {
+
+                }
             }
 
             if (loginState.error.isNotEmpty()) {
