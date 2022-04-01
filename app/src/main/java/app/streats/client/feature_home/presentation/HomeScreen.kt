@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,40 +19,38 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = hiltViewModel()) {
-    Surface(modifier = Modifier.fillMaxSize()) {
 
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         val homeScreenState = homeScreenViewModel.homeState.value
+        Text("HomeScreen")
+        Button(onClick = { homeScreenViewModel.logout() }) {
+            Text(text = "Logout")
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        }
+        val username = homeScreenState.data?.username
+        Text(text = username.toString())
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-            Text("HomeScreen")
-            Button(onClick = { homeScreenViewModel.logout() }) {
-                Text(text = "Logout")
+            homeScreenState.data?.nearbyShops?.let { it ->
+                items(it) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .padding(6.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp
+                    ) {
+                        Text(text = it.shopName)
 
-            }
-            val username = homeScreenState.data?.username
-            Text(text = username.toString())
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                homeScreenState.data?.nearbyShops?.let { it ->
-                    items(it) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp)
-                                .padding(6.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = 4.dp
-                        ) {
-                            Text(text = it.shopName)
-
-                        }
                     }
                 }
             }
