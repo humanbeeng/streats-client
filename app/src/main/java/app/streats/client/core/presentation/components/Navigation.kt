@@ -9,6 +9,7 @@ import app.streats.client.feature_auth.presentation.login_screen.LoginScreen
 import app.streats.client.feature_auth.presentation.splash_screen.SplashScreen
 import app.streats.client.feature_auth.util.AuthScreens
 import app.streats.client.feature_cart.presentation.cart_screen.CartScreen
+import app.streats.client.feature_cart.util.CartScreens
 import app.streats.client.feature_home.presentation.HomeScreen
 import app.streats.client.feature_home.util.HomeScreens
 
@@ -42,7 +43,7 @@ fun Navigation(navController: NavHostController) {
             HomeScreen()
         }
 
-        composable("cart_screen") {
+        composable(CartScreens.CartScreen.route) {
             CartScreen()
         }
 
