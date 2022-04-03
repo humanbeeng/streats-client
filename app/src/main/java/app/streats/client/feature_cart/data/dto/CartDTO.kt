@@ -8,7 +8,7 @@ data class CartDTO(
     val cartItems: MutableMap<String, CartItemDTO>,
     val totalCost: Double
 ) {
-    fun toCart(): List<CartItem> {
+    fun toCartItems(): List<CartItem> {
         val cart: MutableList<CartItem> = mutableListOf()
         cartItems.map { cartItem ->
             cart.add(

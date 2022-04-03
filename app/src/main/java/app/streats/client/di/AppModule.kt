@@ -3,6 +3,8 @@ package app.streats.client.di
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import app.streats.client.core.util.AccessToken
+import app.streats.client.feature_auth.util.AuthConstants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,5 +21,12 @@ object AppModule {
         return app.getSharedPreferences("streats", MODE_PRIVATE)
     }
 
+    @Provides
+    @Singleton
+    fun providesAccessToken(app: Application): AccessToken {
+        val sharedPreferences = providesSharedPreferences(app)
+        val accessToken = sharedPreferences.getString(AuthConstants.ACCESS_TOKEN_PREF, "") ?: ""
+        return AccessToken(accessToken)
+    }
 
 }
