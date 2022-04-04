@@ -31,7 +31,7 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
 
         Row {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                cartScreenState.cartData?.cartItems?.let { it ->
+                cartScreenState.data?.cartItems?.let { it ->
                     items(it) {
                         CartItemCard(cartItem = it, cartScreenViewModel = cartScreenViewModel)
                     }
@@ -39,7 +39,7 @@ fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
             }
         }
         Row(modifier = Modifier.padding(bottom = 60.dp)) {
-            if (cartScreenState.cartData?.itemCount?.let { it > 0 } == true) {
+            if (cartScreenState.data?.itemCount?.let { it > 0 } == true) {
                 CheckoutCard(cartScreenViewModel)
             }
         }

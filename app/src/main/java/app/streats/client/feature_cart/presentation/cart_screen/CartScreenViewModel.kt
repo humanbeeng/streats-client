@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_cart.data.repository.CartRepository
+import app.streats.client.feature_cart.domain.usecase.AddToCart
+import app.streats.client.feature_cart.domain.usecase.RemoveFromCart
 import app.streats.client.feature_cart.util.CartConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -15,12 +17,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartScreenViewModel @Inject constructor(
+    private val addToCartUC: AddToCart,
+    private val removeFromCartUC : RemoveFromCart,
     private val cartRepository: CartRepository
 ) : ViewModel() {
 
     private val _cartState = mutableStateOf(CartState())
     val cartState: State<CartState> = _cartState
-
 
 
     init {
@@ -47,7 +50,7 @@ class CartScreenViewModel @Inject constructor(
                     _cartState.value = CartState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    _cartState.value = CartState(cartData = state.data, isLoading = false)
+                    _cartState.value = CartState(data = state.data, isLoading = false)
                 }
 
                 is Resource.Error -> {
@@ -59,13 +62,13 @@ class CartScreenViewModel @Inject constructor(
     }
 
     private fun addToCart(dishId: String, shopId: String) {
-        cartRepository.addToCart(dishId, shopId).onEach { state ->
+        addToCartUC(dishId, shopId).onEach { state ->
             when (state) {
                 is Resource.Loading -> {
                     _cartState.value = CartState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    _cartState.value = CartState(cartData = state.data, isLoading = false)
+                    _cartState.value = CartState(data = state.data, isLoading = false)
                 }
 
                 is Resource.Error -> {
@@ -77,13 +80,13 @@ class CartScreenViewModel @Inject constructor(
     }
 
     private fun removeFromCart(dishId: String, shopId: String) {
-        cartRepository.removeFromCart(dishId, shopId).onEach { state ->
+        removeFromCartUC(dishId, shopId).onEach { state ->
             when (state) {
                 is Resource.Loading -> {
                     _cartState.value = CartState(isLoading = true)
                 }
                 is Resource.Success -> {
-                    _cartState.value = CartState(cartData = state.data, isLoading = false)
+                    _cartState.value = CartState(data = state.data, isLoading = false)
                 }
 
                 is Resource.Error -> {
