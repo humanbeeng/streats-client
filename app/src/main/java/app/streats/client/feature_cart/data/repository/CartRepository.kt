@@ -29,10 +29,9 @@ class CartRepository @Inject constructor(
                 val accessToken =
                     accessToken.value
                 val cartDTO = api.cart(accessToken)
-                val cartItems = cartDTO.toCartItems()
                 val cart = Cart(
                     shopId = cartDTO.shopId,
-                    cartItems = cartItems,
+                    cartItems = cartDTO.toCartItems(),
                     itemCount = cartDTO.itemCount,
                     totalCost = cartDTO.totalCost
                 )
