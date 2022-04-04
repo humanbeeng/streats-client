@@ -1,8 +1,7 @@
 package app.streats.client.feature_home.data.repository
 
-import android.content.SharedPreferences
+import app.streats.client.core.util.AccessToken
 import app.streats.client.core.util.Resource
-import app.streats.client.feature_auth.util.AuthConstants
 import app.streats.client.feature_home.data.HomeApi
 import app.streats.client.feature_home.data.dto.HomeDTO
 import kotlinx.coroutines.flow.Flow
@@ -13,15 +12,14 @@ import javax.inject.Inject
 
 class HomeRepository @Inject constructor(
     private val api: HomeApi,
-    private val sharedPreferences: SharedPreferences
+    private val accessToken: AccessToken
 ) {
 
     fun home(): Flow<Resource<HomeDTO>> {
         return flow {
             try {
                 emit(Resource.Loading())
-                val accessToken =
-                    sharedPreferences.getString(AuthConstants.ACCESS_TOKEN_PREF, "") ?: ""
+                val accessToken = accessToken.value
                 val home = api.home(accessToken)
                 emit(Resource.Success(home))
             } catch (e: HttpException) {
