@@ -1,6 +1,6 @@
 package app.streats.client.feature_home.data.dto
 
 data class DishItemDTO(
-    val dishItem: String,
+    val dishName: String,
     val price: Double
 )

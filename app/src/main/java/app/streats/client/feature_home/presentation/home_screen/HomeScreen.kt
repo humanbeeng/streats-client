@@ -1,5 +1,6 @@
-package app.streats.client.feature_home.presentation
+package app.streats.client.feature_home.presentation.home_screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,13 +13,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import app.streats.client.feature_home.data.dto.ShopDTO
 
 /**
  * TODO : Add Shimmer Cards while loading
  */
 
 @Composable
-fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = hiltViewModel()) {
+fun HomeScreen(
+    homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
+    onShopItemSelected: (ShopDTO) -> Unit
+) {
 
     val homeScreenState = homeScreenViewModel.homeState.value
 
@@ -28,7 +33,7 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = hiltViewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("HomeScreen")
-        Button(onClick = { homeScreenViewModel.logout() }) {
+        Button(onClick = { homeScreenViewModel.homeEventListener(HomeEvent.Logout) }) {
             Text(text = "Logout")
 
         }
@@ -42,12 +47,15 @@ fun HomeScreen(homeScreenViewModel: HomeScreenViewModel = hiltViewModel()) {
             homeScreenState.data?.nearbyShops?.let { it ->
                 items(it) {
                     Card(
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = 4.dp,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(100.dp)
-                            .padding(6.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        elevation = 4.dp
+                            .padding(6.dp)
+                            .clickable {
+                                onShopItemSelected(it)
+                            }
                     ) {
                         Text(text = it.shopName)
 
