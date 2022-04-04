@@ -2,6 +2,7 @@ package app.streats.client.di
 
 import app.streats.client.core.util.Constants
 import app.streats.client.feature_home.data.HomeApi
+import app.streats.client.feature_home.data.ShopApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,12 +23,23 @@ object HomeModule {
 
     @Singleton
     @Provides
-    fun provideHomeApi(): HomeApi {
+    fun providesHomeApi(): HomeApi {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(Constants.SERVER_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(HomeApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providesShopApi(): ShopApi {
+        return Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(Constants.SERVER_BASE_URL)
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(ShopApi::class.java)
     }
 }
