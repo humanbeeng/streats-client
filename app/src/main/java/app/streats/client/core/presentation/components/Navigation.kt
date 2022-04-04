@@ -10,7 +10,8 @@ import app.streats.client.feature_auth.presentation.splash_screen.SplashScreen
 import app.streats.client.feature_auth.util.AuthScreens
 import app.streats.client.feature_cart.presentation.cart_screen.CartScreen
 import app.streats.client.feature_cart.util.CartScreens
-import app.streats.client.feature_home.presentation.HomeScreen
+import app.streats.client.feature_home.presentation.home_screen.HomeScreen
+import app.streats.client.feature_home.presentation.shop_screen.ShopScreen
 import app.streats.client.feature_home.util.HomeScreens
 
 @Composable
@@ -40,7 +41,11 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(HomeScreens.HomeScreen.route) {
-            HomeScreen()
+            HomeScreen(
+                onShopItemSelected = {
+                    navController.navigate(HomeScreens.ShopScreen.route + "/${it.shopId}")
+                }
+            )
         }
 
         composable(CartScreens.CartScreen.route) {
@@ -49,6 +54,10 @@ fun Navigation(navController: NavHostController) {
 
         composable("orders_screen") {
             OrderScreen()
+        }
+
+        composable(HomeScreens.ShopScreen.route + "/{shopId}") {
+            ShopScreen()
         }
 
     }
