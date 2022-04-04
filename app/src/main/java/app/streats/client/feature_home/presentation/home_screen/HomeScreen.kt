@@ -1,4 +1,4 @@
-package app.streats.client.feature_home.presentation
+package app.streats.client.feature_home.presentation.home_screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
