@@ -29,11 +29,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
     }
     buildFeatures {
         compose true
@@ -62,11 +62,17 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 
-//    Firebase
-    platform 'com.google.firebase:firebase-bom:29.2.0'
-    implementation 'com.google.firebase:firebase-analytics-ktx:20.1.0'
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.2'
+//    Firebase & Google Play Services
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.3'
+    platform 'com.google.firebase:firebase-bom:29.3.1'
+    implementation 'com.google.firebase:firebase-analytics-ktx:20.1.2'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
+
+    //    Cashfree
+    implementation 'com.cashfree.pg:android-sdk:1.7.15'
+
 
 
     //    Retrofit
@@ -86,12 +92,12 @@ dependencies {
     // Compose dependencies
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1"
     //noinspection GradleDynamicVersion
-    implementation "androidx.navigation:navigation-compose:2.5.0-alpha03"
+    implementation "androidx.navigation:navigation-compose:2.5.0-beta01"
     implementation "com.google.accompanist:accompanist-flowlayout:0.17.0"
 
     // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
 
     // Coroutine Lifecycle Scopes
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
@@ -105,7 +111,7 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
 //    Window Insets
-    implementation "androidx.navigation:navigation-compose:2.5.0-alpha03"
+    implementation "androidx.navigation:navigation-compose:2.5.0-beta01"
     implementation("com.google.accompanist:accompanist-insets-ui:0.22.0-rc")
 
 //    Jetpack Datastore
@@ -115,6 +121,8 @@ dependencies {
     implementation 'com.valentinilk.shimmer:compose-shimmer:1.0.2'
 
 
+//    Accompanist
+    implementation "com.google.accompanist:accompanist-permissions:0.21.1-beta"
 
 
 }

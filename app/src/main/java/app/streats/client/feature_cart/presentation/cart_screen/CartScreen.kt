@@ -1,5 +1,7 @@
 package app.streats.client.feature_cart.presentation.cart_screen
 
+import android.app.Activity.RESULT_OK
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,17 +11,53 @@ import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import app.streats.client.feature_cart.domain.models.CartItem
+import app.streats.client.feature_cart.presentation.checkout.CheckoutState
+import app.streats.client.feature_cart.presentation.contracts.CheckoutContract
 
 
 @Composable
-fun CartScreen(cartScreenViewModel: CartScreenViewModel = hiltViewModel()) {
+fun CartScreen(
+    cartScreenViewModel: CartScreenViewModel = hiltViewModel(),
+    onOrderSuccess: () -> Unit,
+    onOrderFailure: () -> Unit
+) {
 
     val cartScreenState = cartScreenViewModel.cartState.value
+
+    val checkoutActivity = rememberLauncherForActivityResult(
+        contract = CheckoutContract()
+    ) {
+        if (it == RESULT_OK) {
+            onOrderSuccess()
+        } else onOrderFailure()
+    }
+
+
+//    TODO : Add UI feedback
+    LaunchedEffect(key1 = true) {
+        cartScreenViewModel.checkoutState.collect {
+            when (it) {
+                is CheckoutState.Loading -> {
+
+                }
+                is CheckoutState.Success -> {
+                    checkoutActivity.launch(it.data)
+                }
+
+                is CheckoutState.Error -> {
+
+                }
+            }
+        }
+
+    }
+
 
     Column(
         modifier = Modifier
@@ -61,7 +99,10 @@ fun CartItemCard(cartItem: CartItem, cartScreenViewModel: CartScreenViewModel) {
         elevation = 8.dp,
         shape = RoundedCornerShape(8.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
             Column {
                 Text(text = cartItem.itemName)
                 Text(text = cartItem.price.toString())
@@ -101,6 +142,8 @@ fun CartItemCard(cartItem: CartItem, cartScreenViewModel: CartScreenViewModel) {
 
 @Composable
 fun CheckoutCard(cartScreenViewModel: CartScreenViewModel) {
+
+
     Card(
         backgroundColor = Color(0xFF00B649),
         shape = RoundedCornerShape(8.dp),
@@ -110,13 +153,11 @@ fun CheckoutCard(cartScreenViewModel: CartScreenViewModel) {
             .fillMaxWidth()
             .height(50.dp)
             .clickable {
-                cartScreenViewModel.cartEventHandler(
-                    CartEvent.RemoveFromCart(
-                        "6237fc647f0efa7964957434",
-                        "6237fc647f0efa796495743b"
-                    )
-                )
+                cartScreenViewModel.cartEventHandler(CartEvent.Checkout)
+
             }) {
+
+
         Text("Proceed to pay")
     }
 

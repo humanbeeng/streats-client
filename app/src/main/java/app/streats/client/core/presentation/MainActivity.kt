@@ -72,10 +72,6 @@ class MainActivity : ComponentActivity() {
                                 interactionSource = interactionSource,
                                 onClick = {}),
                             onItemClick = {
-                                navController.popBackStack(
-                                    it.route,
-                                    inclusive = true
-                                );
                                 navController.navigate(it.route)
                             }
                         )
