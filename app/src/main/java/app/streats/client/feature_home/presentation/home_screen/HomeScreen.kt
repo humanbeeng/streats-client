@@ -9,6 +9,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,10 +23,20 @@ import app.streats.client.feature_home.data.dto.ShopDTO
 @Composable
 fun HomeScreen(
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
-    onShopItemSelected: (ShopDTO) -> Unit
+    onShopItemSelected: (ShopDTO) -> Unit,
+    onLoggedOut: () -> Unit
 ) {
 
     val homeScreenState = homeScreenViewModel.homeState.value
+
+    LaunchedEffect(key1 = true) {
+        homeScreenViewModel.outgoingHomeScreenEventFlow.collect { homeEvent ->
+            when (homeEvent) {
+                is HomeEvent.Logout -> onLoggedOut()
+            }
+        }
+
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),

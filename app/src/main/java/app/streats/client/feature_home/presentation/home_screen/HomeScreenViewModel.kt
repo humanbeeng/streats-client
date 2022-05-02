@@ -4,7 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.streats.client.core.presentation.events.UIEvent
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_home.data.repository.HomeRepository
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,8 +22,8 @@ class HomeScreenViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
 ) : ViewModel() {
 
-    private val _outgoingEventFlow = MutableSharedFlow<UIEvent>()
-    val outgoingEventFlow = _outgoingEventFlow.asSharedFlow()
+    private val _outgoingHomeScreenEventFlow = MutableSharedFlow<HomeEvent>()
+    val outgoingHomeScreenEventFlow = _outgoingHomeScreenEventFlow.asSharedFlow()
 
     private val _homeState = mutableStateOf(HomeScreenState())
     val homeState: State<HomeScreenState> = _homeState
@@ -64,7 +64,10 @@ class HomeScreenViewModel @Inject constructor(
 
 
     private fun logout() {
-        authRepository.logout()
+        viewModelScope.launch {
+            authRepository.logout()
+            _outgoingHomeScreenEventFlow.emit(HomeEvent.Logout)
+        }
     }
 
 }
