@@ -4,7 +4,9 @@ import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import app.streats.client.core.util.AccessToken
+import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
 import app.streats.client.feature_auth.util.AuthConstants
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,6 +29,18 @@ object AppModule {
         val sharedPreferences = providesSharedPreferences(app)
         val accessToken = sharedPreferences.getString(AuthConstants.ACCESS_TOKEN_PREF, "") ?: ""
         return AccessToken(accessToken)
+    }
+
+    @Provides
+    @Singleton
+    fun providesFirebaseMessagingInstance(): FirebaseMessaging {
+        return FirebaseMessaging.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun providesCurrentLocationCoordinates(): CurrentLocationCoordinates {
+        return CurrentLocationCoordinates(0.00, 0.00)
     }
 
 }
