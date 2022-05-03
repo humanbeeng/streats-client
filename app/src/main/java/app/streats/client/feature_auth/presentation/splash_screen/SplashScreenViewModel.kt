@@ -118,15 +118,15 @@ class SplashScreenViewModel @Inject constructor(
     //    TODO : Fix error retrieving currentLocation Exception
     @SuppressLint("MissingPermission")
     private fun retrieveCurrentLocation(context: Context) {
+        Timber.d("Retrieve Current Location called")
 
         if (allPermissionsGranted()) {
             val fusedLocationProviderClient =
                 LocationServices.getFusedLocationProviderClient(context)
 
-            try {
-                fusedLocationProviderClient.lastLocation
-                    .addOnSuccessListener { currentLocationTask ->
-
+            fusedLocationProviderClient.lastLocation
+                .addOnSuccessListener { currentLocationTask ->
+                    if (currentLocationTask != null) {
                         _currentLocationState.value =
                             CurrentLocationState(
                                 currentLocationCoordinates = CurrentLocationCoordinates(
@@ -139,29 +139,15 @@ class SplashScreenViewModel @Inject constructor(
 
                         currentLocationCoordinates.latitude = currentLocationTask.latitude
                         currentLocationCoordinates.longitude = currentLocationTask.longitude
-
-                    }.addOnFailureListener { currentLocationFailure ->
-                        throw RuntimeException(currentLocationFailure.localizedMessage)
                     }
-            } catch (e: Exception) {
-                _currentLocationState.value =
-                    CurrentLocationState(
-                        currentLocationCoordinates = CurrentLocationCoordinates(
-                            0.00,
-                            0.00
-                        ), isSuccessful = false, isLoading = false
-                    )
+                    Timber.d("${_currentLocationState.value.currentLocationCoordinates}")
 
-            }
-        } else {
-            _currentLocationState.value =
-                CurrentLocationState(
-                    currentLocationCoordinates = CurrentLocationCoordinates(
-                        0.00,
-                        0.00
-                    ), isSuccessful = false, isLoading = false
-                )
+
+                }.addOnFailureListener { currentLocationFailure ->
+                    throw RuntimeException(currentLocationFailure.localizedMessage)
+                }
         }
+
     }
 
     private fun isUserLoggedIn(): Boolean {
