@@ -7,10 +7,10 @@ sealed class SplashScreenRequest {
 
     class UpdatePermissionsState(val permissionState: PermissionState) : SplashScreenRequest()
 
-    class LaunchSplash(val context: Context) : SplashScreenRequest()
+    object LaunchSplash : SplashScreenRequest()
 
     object Authenticate : SplashScreenRequest()
 
-    class FetchLocation(val context: Context): SplashScreenRequest()
+    class FetchLocation(val context: Context) : SplashScreenRequest()
 
 }
