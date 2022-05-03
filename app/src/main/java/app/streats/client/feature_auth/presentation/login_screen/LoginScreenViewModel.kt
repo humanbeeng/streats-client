@@ -5,12 +5,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.streats.client.core.domain.models.AccessToken
+import app.streats.client.core.domain.models.FCMToken
 import app.streats.client.core.presentation.events.UIEvent
-import app.streats.client.core.util.Constants.FCM_TOKEN_PREF
+import app.streats.client.core.util.Constants.EMPTY
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
-import app.streats.client.feature_auth.util.AuthConstants
+import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_LOGIN_FAILURE
 import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_SIGN_IN_TOKEN_PREF
 import app.streats.client.feature_home.util.HomeScreens
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -38,7 +40,9 @@ class LoginScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val sharedPreferences: SharedPreferences,
     private val firebaseAuth: FirebaseAuth,
-    private val currentLocationCoordinates: CurrentLocationCoordinates
+    private val currentLocationCoordinates: CurrentLocationCoordinates,
+    private val accessToken: AccessToken,
+    private val fcmToken: FCMToken
 ) : ViewModel() {
 
     private val _outgoingEventFlow = MutableSharedFlow<UIEvent>()
@@ -67,76 +71,80 @@ class LoginScreenViewModel @Inject constructor(
 
     }
 
-    /*
-     * TODO : Refactor this method
-     */
 
     private fun login(task: Task<GoogleSignInAccount>?) {
 
+        try {
 
-        val fcmToken = sharedPreferences.getString(FCM_TOKEN_PREF, "") ?: ""
+            val googleSignInAccount = task?.getResult(ApiException::class.java)
+            if (googleSignInAccount != null) {
+                val idToken = task.result.idToken!!
+                val credentials = GoogleAuthProvider.getCredential(idToken, null)
 
-        val googleSignInAccount = task?.getResult(ApiException::class.java)
-        if (googleSignInAccount != null) {
-            val idToken = task.result.idToken!!
-            val credentials = GoogleAuthProvider.getCredential(idToken, null)
+                firebaseAuth.signInWithCredential(credentials)
+                    .addOnCompleteListener { signInWithCredentialTask ->
+                        if (signInWithCredentialTask.isSuccessful) {
 
-            FirebaseAuth.getInstance().signInWithCredential(credentials)
-                .addOnCompleteListener { signInWithCredentialTask ->
-                    if (signInWithCredentialTask.isSuccessful) {
+                            FirebaseAuth.getInstance().currentUser?.getIdToken(false)
+                                ?.addOnCompleteListener { idTokenTask ->
 
-                        FirebaseAuth.getInstance().currentUser?.getIdToken(false)
-                            ?.addOnCompleteListener { idTokenTask ->
+                                    if (idTokenTask.isSuccessful) {
 
-                                if (idTokenTask.isSuccessful) {
-                                    val token = idTokenTask.result.token!!
-                                    authRepository.login(
-                                        currentLocationCoordinates,
-                                        fcmToken,
-                                        token
-                                    ).onEach { state ->
-                                        when (state) {
-                                            is Resource.Error -> {
-                                            }
-                                            is Resource.Success -> {
-                                                sharedPreferences.edit()
-                                                    .putString(
-                                                        GOOGLE_SIGN_IN_TOKEN_PREF,
-                                                        state.data
-                                                    ).apply()
-                                                _outgoingEventFlow.emit(
-                                                    UIEvent.Navigate(
-                                                        HomeScreens.HomeScreen.route
+                                        val token = idTokenTask.result.token!!
+
+                                        authRepository.login(
+                                            currentLocationCoordinates,
+                                            fcmToken.value,
+                                            token
+                                        ).onEach { state ->
+                                            when (state) {
+
+                                                is Resource.Error -> {
+                                                    Timber.e("$GOOGLE_LOGIN_FAILURE : ${state.message}")
+                                                    accessToken.value = EMPTY
+                                                    _outgoingEventFlow.emit(UIEvent.Error)
+                                                }
+                                                is Resource.Success -> {
+                                                    accessToken.setAccessToken(state.data.toString())
+
+                                                    sharedPreferences.edit()
+                                                        .putString(
+                                                            GOOGLE_SIGN_IN_TOKEN_PREF,
+                                                            state.data
+                                                        ).apply()
+
+                                                    _outgoingEventFlow.emit(
+                                                        UIEvent.Navigate(
+                                                            HomeScreens.HomeScreen.route
+                                                        )
                                                     )
-                                                )
+                                                }
+                                                is Resource.Loading -> {
+                                                    _outgoingEventFlow.emit(UIEvent.Loading)
+                                                }
                                             }
-                                            is Resource.Loading -> {
 
-                                                Timber.d("Sign in with credentials success. ")
-                                            }
-                                        }
-
-                                    }.launchIn(viewModelScope)
+                                        }.launchIn(viewModelScope)
 
 
-                                } else {
-                                    sharedPreferences.edit()
-                                        .putString(AuthConstants.GOOGLE_SIGN_IN_TOKEN_PREF, "")
-                                        .apply()
-                                    Timber.e("Sign in failed while fetching token.")
-
+                                    } else {
+                                        Timber.e("$GOOGLE_LOGIN_FAILURE at idTokenTask level")
+                                        handleError()
+                                    }
                                 }
-                            }
-                    } else {
+                        } else {
+                            Timber.e("$GOOGLE_LOGIN_FAILURE at signInWithCredentialsTask level")
 
+                            handleError()
+                        }
                     }
+            } else {
+                Timber.e("$GOOGLE_LOGIN_FAILURE at googleSignInAccount fetch level")
+                handleError()
+            }
+        } catch (e: Exception) {
+            Timber.e("$$GOOGLE_LOGIN_FAILURE : ${e.localizedMessage}")
 
-                }
-        } else {
-//            TODO : Set value to AccessToken DI instead of sharedPref
-            sharedPreferences.edit()
-                .putString(AuthConstants.GOOGLE_SIGN_IN_TOKEN_PREF, "").apply()
-            Timber.e("Sign in with credentials failed!")
         }
 
 
@@ -146,5 +154,11 @@ class LoginScreenViewModel @Inject constructor(
         authRepository.logout()
     }
 
-
+    private fun handleError() {
+        _outgoingEventFlow.tryEmit(UIEvent.Error)
+        accessToken.setAccessToken(EMPTY)
+        sharedPreferences.edit()
+            .putString(GOOGLE_SIGN_IN_TOKEN_PREF, EMPTY)
+            .apply()
+    }
 }
