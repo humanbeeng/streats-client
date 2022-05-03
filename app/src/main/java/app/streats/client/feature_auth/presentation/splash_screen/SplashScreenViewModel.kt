@@ -165,12 +165,10 @@ class SplashScreenViewModel @Inject constructor(
     }
 
     private fun isUserLoggedIn(): Boolean {
-
         return (firebaseAuth.currentUser != null && sharedPreferences.getString(
             AuthConstants.ACCESS_TOKEN_PREF,
-            ""
+            EMPTY
         ).isNullOrBlank().not())
-
     }
 
 
