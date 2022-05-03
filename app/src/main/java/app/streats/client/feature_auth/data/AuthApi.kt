@@ -8,22 +8,20 @@ import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
 
-/**
- * Refactor Login to return Response<LoginResponseDTO>
- */
 interface AuthApi {
 
-//    @POST("/auth/login")
-//    suspend fun login(@Body loginRequestDTO: LoginRequestDTO): Response<LoginResponseDTO>
 
     @POST("/auth")
     suspend fun authenticate(
-        @Header("Authorization") accessToken: String, @Body authRequestDTO: AuthRequestDTO
+        @Header("Authorization") accessToken: String,
+        @Body authRequestDTO: AuthRequestDTO
     ): Response<Unit>
 
 
     @POST("/auth/login")
-    suspend fun login(@Body loginRequestDTO: LoginRequestDTO): LoginResponseDTO
+    suspend fun login(
+        @Body loginRequestDTO: LoginRequestDTO
+    ): Response<LoginResponseDTO>
 
 
 }
