@@ -3,6 +3,7 @@ package app.streats.client.feature_cart.presentation.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import app.streats.client.core.util.Constants
 import app.streats.client.feature_cart.util.PaymentConstants
 import app.streats.client.feature_order.data.dto.OrderDTO
 import com.cashfree.pg.CFPaymentService.*
@@ -70,7 +71,7 @@ class CheckoutActivity : Activity() {
         paymentObject[PARAM_CUSTOMER_NAME] = "TEST_CUSTOMER_1"
         paymentObject[PARAM_CUSTOMER_EMAIL] = "test@test.com"
         paymentObject[PARAM_NOTIFY_URL] =
-            "https://74f3-171-76-95-176.ngrok.io/orders/callback"
+            "${Constants.SERVER_BASE_URL}orders/callback"
 //
 //
         cfInstance.upiPayment(this, paymentObject, order.cftoken, order.stage)
