@@ -4,7 +4,7 @@ import app.streats.client.core.util.Constants.ERROR_MESSAGE
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
 
 data class CurrentLocationState(
-    val currentLocationCoordinates: CurrentLocationCoordinates = CurrentLocationCoordinates(),
+    val currentLocationCoordinates: CurrentLocationCoordinates = CurrentLocationCoordinates(0.00, 0.00),
     val error: String? = ERROR_MESSAGE,
     val isLoading: Boolean = false,
     val isSuccessful: Boolean = false
