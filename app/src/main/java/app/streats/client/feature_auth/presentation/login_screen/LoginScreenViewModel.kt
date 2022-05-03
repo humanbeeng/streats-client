@@ -13,6 +13,7 @@ import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
 import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_LOGIN_FAILURE
+import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_LOGIN_SUCCESS
 import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_SIGN_IN_TOKEN_PREF
 import app.streats.client.feature_home.util.HomeScreens
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -118,6 +119,7 @@ class LoginScreenViewModel @Inject constructor(
                                                             HomeScreens.HomeScreen.route
                                                         )
                                                     )
+                                                    Timber.d(GOOGLE_LOGIN_SUCCESS)
                                                 }
                                                 is Resource.Loading -> {
                                                     _outgoingEventFlow.emit(UIEvent.Loading)
