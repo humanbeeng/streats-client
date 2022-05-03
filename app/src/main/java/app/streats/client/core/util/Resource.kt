@@ -1,8 +1,6 @@
 package app.streats.client.core.util
 
 
-typealias SimpleResource = Resource<Unit>
-
 sealed class Resource<T>(
     val data: T? = null,
     val message: String? = null
