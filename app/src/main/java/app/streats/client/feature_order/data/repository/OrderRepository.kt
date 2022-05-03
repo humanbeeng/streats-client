@@ -1,6 +1,6 @@
 package app.streats.client.feature_order.data.repository
 
-import app.streats.client.core.util.AccessToken
+import app.streats.client.core.domain.models.AccessToken
 import app.streats.client.core.util.Constants
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_order.data.OrderApi
