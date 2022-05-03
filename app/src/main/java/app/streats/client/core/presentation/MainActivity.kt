@@ -17,7 +17,9 @@ import app.streats.client.core.presentation.components.BottomNavItem
 import app.streats.client.core.presentation.components.BottomNavigationBar
 import app.streats.client.core.presentation.components.Navigation
 import app.streats.client.core.presentation.ui.theme.StreatsTheme
+import app.streats.client.feature_cart.util.CartScreens
 import app.streats.client.feature_home.util.HomeScreens
+import app.streats.client.feature_order.util.OrderScreens
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -56,13 +58,13 @@ class MainActivity : ComponentActivity() {
                                 ),
                                 BottomNavItem(
                                     name = "Cart",
-                                    route = "cart_screen",
+                                    route = CartScreens.CartScreen.route,
                                     icon = Icons.Default.ShoppingCart,
                                     badgeCount = 3
                                 ),
                                 BottomNavItem(
                                     name = "Orders",
-                                    route = "orders_screen",
+                                    route = OrderScreens.OrderHistoryScreen.route,
                                     icon = Icons.Default.List
                                 )
                             ),
@@ -72,7 +74,10 @@ class MainActivity : ComponentActivity() {
                                 interactionSource = interactionSource,
                                 onClick = {}),
                             onItemClick = {
-                                navController.navigate(it.route)
+                                navController.navigate(it.route) {
+                                    popUpTo(HomeScreens.HomeScreen.route)
+
+                                }
                             }
                         )
                     }
