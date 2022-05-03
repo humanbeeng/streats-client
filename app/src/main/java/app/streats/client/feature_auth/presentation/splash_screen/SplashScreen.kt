@@ -42,6 +42,8 @@ fun SplashScreen(
 
 //    Add a subscriber for incoming SplashScreenUIEvents
     LaunchedEffect(key1 = Unit) {
+        splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.LaunchSplash)
+
         outgoingSplashScreenEventUIEventFlow.collectLatest { event ->
             when (event) {
                 is SplashScreenEvent.AuthSuccess -> onLoggedIn()
@@ -51,10 +53,6 @@ fun SplashScreen(
 
     }
 
-    LaunchedEffect(key1 = Unit) {
-        splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.LaunchSplash(context = context))
-
-    }
 
     LaunchedEffect(key1 = permissionState.hasAllPermissions, block = {
         if (permissionState.hasAllPermissions) {
