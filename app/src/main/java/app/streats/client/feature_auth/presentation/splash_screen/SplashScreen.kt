@@ -22,13 +22,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- *TODO : Refactor to navigate only when
- *  1. All permissions are granted
- *  2. Token is fetched
- *  3. Current Location is fetched
- *
- */
 @Composable
 fun SplashScreen(
     splashScreenViewModel: SplashScreenViewModel = hiltViewModel(),
@@ -47,6 +40,7 @@ fun SplashScreen(
 //    Request for permissions
     PermissionsUI(splashScreenViewModel)
 
+//    Add a subscriber for incoming SplashScreenUIEvents
     LaunchedEffect(key1 = Unit) {
         outgoingSplashScreenEventUIEventFlow.collectLatest { event ->
             when (event) {
@@ -152,7 +146,6 @@ fun PermissionsUI(
     }
 
 //    Launch permissions dialogue ON_START of Activity
-
     val lifecycleOwner = LocalLifecycleOwner.current
 
 
