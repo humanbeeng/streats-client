@@ -7,7 +7,9 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.streats.client.core.util.AccessToken
+import app.streats.client.core.domain.models.AccessToken
+import app.streats.client.core.domain.models.FCMToken
+import app.streats.client.core.util.Constants.EMPTY
 import app.streats.client.core.util.Constants.ERROR_MESSAGE
 import app.streats.client.core.util.Constants.FCM_TOKEN_PREF
 import app.streats.client.core.util.Resource
@@ -35,7 +37,8 @@ class SplashScreenViewModel @Inject constructor(
     private val accessToken: AccessToken,
     private val authRepository: AuthRepository,
     private val firebaseMessaging: FirebaseMessaging,
-    private val currentLocationCoordinates: CurrentLocationCoordinates
+    private val currentLocationCoordinates: CurrentLocationCoordinates,
+    private val fcmToken: FCMToken
 ) : ViewModel() {
 
     private val _loginState = mutableStateOf(LoginState())
@@ -112,8 +115,7 @@ class SplashScreenViewModel @Inject constructor(
         return _permissionState.value.hasAllPermissions
     }
 
-    //    TODO : Refactor this method
-//    TODO : Fix error retrieving currentLocation Exception
+    //    TODO : Fix error retrieving currentLocation Exception
     @SuppressLint("MissingPermission")
     private fun retrieveCurrentLocation(context: Context) {
 
@@ -124,6 +126,7 @@ class SplashScreenViewModel @Inject constructor(
             try {
                 fusedLocationProviderClient.lastLocation
                     .addOnSuccessListener { currentLocationTask ->
+
                         _currentLocationState.value =
                             CurrentLocationState(
                                 currentLocationCoordinates = CurrentLocationCoordinates(
@@ -137,8 +140,8 @@ class SplashScreenViewModel @Inject constructor(
                         currentLocationCoordinates.latitude = currentLocationTask.latitude
                         currentLocationCoordinates.longitude = currentLocationTask.longitude
 
-
-                        Timber.d("Current Location Updated ${_currentLocationState.value.currentLocationCoordinates}")
+                    }.addOnFailureListener { currentLocationFailure ->
+                        throw RuntimeException(currentLocationFailure.localizedMessage)
                     }
             } catch (e: Exception) {
                 _currentLocationState.value =
@@ -159,8 +162,6 @@ class SplashScreenViewModel @Inject constructor(
                     ), isSuccessful = false, isLoading = false
                 )
         }
-
-
     }
 
     private fun isUserLoggedIn(): Boolean {
@@ -179,8 +180,6 @@ class SplashScreenViewModel @Inject constructor(
         } else {
             _loginState.value = LoginState(isLoggedIn = false, isLoading = false)
         }
-        Timber.d("UserState ${_loginState.value}")
-
     }
 
 
@@ -191,11 +190,11 @@ class SplashScreenViewModel @Inject constructor(
                     FcmTokenState(fcmToken = tokenTask.toString(), isSuccessful = true)
 
                 sharedPreferences.edit().putString(FCM_TOKEN_PREF, tokenTask).apply()
-
-                Timber.d("FCM Token State updated: ${_fcmTokenState.value} ")
+                fcmToken.value = tokenTask.toString()
             }
         } catch (e: Exception) {
             _fcmTokenState.value = FcmTokenState(error = ERROR_MESSAGE, isSuccessful = false)
+            fcmToken.value = EMPTY
         }
     }
 }

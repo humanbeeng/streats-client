@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun SplashScreen(
     splashScreenViewModel: SplashScreenViewModel = hiltViewModel(),
     onLoggedIn: () -> Unit,
-    onLoggedOut: () -> Unit
+    onLoggedOut: () -> Unit,
 ) {
 
     val permissionState = splashScreenViewModel.permissionState.value
@@ -63,7 +63,7 @@ fun SplashScreen(
     }
 
     LaunchedEffect(key1 = permissionState.hasAllPermissions, block = {
-        if(permissionState.hasAllPermissions) {
+        if (permissionState.hasAllPermissions) {
             splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.FetchLocation(context))
         }
     })
