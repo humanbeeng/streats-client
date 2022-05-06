@@ -1,7 +1,7 @@
 package app.streats.client.feature_order.data.repository
 
 import app.streats.client.core.domain.models.AccessToken
-import app.streats.client.core.util.Constants
+import app.streats.client.core.util.CoreConstants
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_order.data.OrderApi
 import app.streats.client.feature_order.data.dto.OrderDTO
@@ -26,15 +26,15 @@ class OrderRepository @Inject constructor(
                 if (response.isSuccessful && (order != null)) {
                     emit(Resource.Success(data = order))
                 } else {
-                    emit(Resource.Error(message = Constants.ERROR_MESSAGE))
+                    emit(Resource.Error(message = CoreConstants.ERROR_MESSAGE))
                 }
             } catch (e: HttpException) {
                 Timber.e(e.message());
-                emit(Resource.Error(message = Constants.ERROR_MESSAGE))
+                emit(Resource.Error(message = CoreConstants.ERROR_MESSAGE))
 
             } catch (e: IOException) {
                 Timber.e(e.localizedMessage);
-                emit(Resource.Error(message = Constants.ERROR_MESSAGE))
+                emit(Resource.Error(message = CoreConstants.ERROR_MESSAGE))
             }
 
         }

@@ -1,6 +1,6 @@
 package app.streats.client.di
 
-import app.streats.client.core.util.Constants
+import app.streats.client.core.util.CoreConstants
 import app.streats.client.feature_cart.data.CartApi
 import dagger.Module
 import dagger.Provides
@@ -25,7 +25,7 @@ object CartModule {
     fun providesCartApi(): CartApi {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(Constants.SERVER_BASE_URL)
+            .baseUrl(CoreConstants.SERVER_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(CartApi::class.java)

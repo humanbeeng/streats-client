@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import app.streats.client.core.domain.models.AccessToken
 import app.streats.client.core.domain.models.FCMToken
 import app.streats.client.core.presentation.events.UIEvent
-import app.streats.client.core.util.Constants.EMPTY
+import app.streats.client.core.util.CoreConstants.EMPTY
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates

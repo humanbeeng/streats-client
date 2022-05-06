@@ -2,8 +2,8 @@ package app.streats.client.feature_auth.data.repository
 
 import android.content.SharedPreferences
 import app.streats.client.core.domain.models.AccessToken
-import app.streats.client.core.util.Constants.EMPTY
-import app.streats.client.core.util.Constants.ERROR_MESSAGE
+import app.streats.client.core.util.CoreConstants.EMPTY
+import app.streats.client.core.util.CoreConstants.ERROR_MESSAGE
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.AuthApi
 import app.streats.client.feature_auth.data.dto.AuthRequestDTO

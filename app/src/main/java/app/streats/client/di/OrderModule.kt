@@ -1,6 +1,6 @@
 package app.streats.client.di
 
-import app.streats.client.core.util.Constants
+import app.streats.client.core.util.CoreConstants
 import app.streats.client.feature_order.data.OrderApi
 import dagger.Module
 import dagger.Provides
@@ -26,7 +26,7 @@ object OrderModule {
     fun providesOrderApi(): OrderApi {
         return Retrofit.Builder()
             .client(OrderModule.okHttpClient)
-            .baseUrl(Constants.SERVER_BASE_URL)
+            .baseUrl(CoreConstants.SERVER_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(OrderApi::class.java)

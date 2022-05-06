@@ -1,6 +1,6 @@
 package app.streats.client.feature_auth.presentation.login_screen
 
-import app.streats.client.core.util.Constants.EMPTY
+import app.streats.client.core.util.CoreConstants.EMPTY
 
 data class LoginState(
     val isLoggedIn: Boolean = false,
