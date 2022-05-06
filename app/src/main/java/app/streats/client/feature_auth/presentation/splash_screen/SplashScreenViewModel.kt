@@ -9,16 +9,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.streats.client.core.domain.models.AccessToken
 import app.streats.client.core.domain.models.FCMToken
-import app.streats.client.core.util.Constants.EMPTY
-import app.streats.client.core.util.Constants.ERROR_MESSAGE
-import app.streats.client.core.util.Constants.FCM_TOKEN_PREF
+import app.streats.client.core.util.CoreConstants.EMPTY
+import app.streats.client.core.util.CoreConstants.ERROR_MESSAGE
+import app.streats.client.core.util.CoreConstants.FCM_TOKEN_PREF
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
 import app.streats.client.feature_auth.presentation.login_screen.LoginState
 import app.streats.client.feature_auth.presentation.permissions.PermissionState
 import app.streats.client.feature_auth.util.AuthConstants
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -124,28 +126,38 @@ class SplashScreenViewModel @Inject constructor(
             val fusedLocationProviderClient =
                 LocationServices.getFusedLocationProviderClient(context)
 
-            fusedLocationProviderClient.lastLocation
-                .addOnSuccessListener { currentLocationTask ->
-                    if (currentLocationTask != null) {
-                        _currentLocationState.value =
-                            CurrentLocationState(
-                                currentLocationCoordinates = CurrentLocationCoordinates(
-                                    currentLocationTask.latitude,
-                                    currentLocationTask.longitude
-                                ),
-                                isLoading = false,
-                                isSuccessful = true
-                            )
+            fusedLocationProviderClient.getCurrentLocation(
+                LocationRequest.PRIORITY_HIGH_ACCURACY,
+                CancellationTokenSource().token
+            ).addOnCompleteListener { currentLocationTask ->
+                if (currentLocationTask.isSuccessful) {
+                    _currentLocationState.value =
+                        CurrentLocationState(
+                            currentLocationCoordinates = CurrentLocationCoordinates(
+                                currentLocationTask.result.latitude,
+                                currentLocationTask.result.longitude
+                            ),
+                            isLoading = false,
+                            isSuccessful = true
+                        )
 
-                        currentLocationCoordinates.latitude = currentLocationTask.latitude
-                        currentLocationCoordinates.longitude = currentLocationTask.longitude
-                    }
-                    Timber.d("${_currentLocationState.value.currentLocationCoordinates}")
+                    currentLocationCoordinates.latitude = currentLocationTask.result.latitude
+                    currentLocationCoordinates.longitude = currentLocationTask.result.longitude
+                } else {
+                    _currentLocationState.value =
+                        CurrentLocationState(
+                            currentLocationCoordinates = CurrentLocationCoordinates(
+                                currentLocationTask.result.latitude,
+                                currentLocationTask.result.longitude
+                            ),
+                            isLoading = false,
+                            isSuccessful = false
+                        )
 
-
-                }.addOnFailureListener { currentLocationFailure ->
-                    throw RuntimeException(currentLocationFailure.localizedMessage)
                 }
+                Timber.d("${_currentLocationState.value.currentLocationCoordinates}")
+
+            }
         }
 
     }
