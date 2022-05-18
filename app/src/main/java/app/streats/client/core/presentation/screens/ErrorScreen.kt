@@ -12,6 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+//TODO : Add UI and state reason for error if possible
 @Composable
 fun ErrorScreen() {
     Scaffold(modifier = Modifier.fillMaxSize()) {

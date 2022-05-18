@@ -33,7 +33,7 @@ class ShopScreenViewModel @Inject constructor(
     val cartState: State<CartState> = _cartState
 
     init {
-        savedStateHandle.get<String>(HomeConstants.STREATS_SHOP_ID)
+        savedStateHandle.get<String>(HomeConstants.PARAM_STREATS_SHOP_ID)
             ?.let { shopIdValueFromState -> getShop(shopIdValueFromState) }
     }
 

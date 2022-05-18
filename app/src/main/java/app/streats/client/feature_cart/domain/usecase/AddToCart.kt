@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 class AddToCart @Inject constructor(private val cartRepository: CartRepository) {
 
+//    Remove this usecases
     operator fun invoke(dishId: String, shopId: String): Flow<Resource<Cart>> {
         return cartRepository.addToCart(dishId, shopId)
     }

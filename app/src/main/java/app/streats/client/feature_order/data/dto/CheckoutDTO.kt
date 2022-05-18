@@ -1,6 +1,10 @@
 package app.streats.client.feature_order.data.dto
 
-data class OrderDTO(
+data class CheckoutDTO(
+    val username: String,
+
+    val email: String,
+
     val orderAmount: String,
 
     val orderCurrency: String,

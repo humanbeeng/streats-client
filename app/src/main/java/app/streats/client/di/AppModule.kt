@@ -3,7 +3,8 @@ package app.streats.client.di
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import app.streats.client.core.util.AccessToken
+import app.streats.client.core.domain.models.AccessToken
+import app.streats.client.core.domain.models.FCMToken
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
 import app.streats.client.feature_auth.util.AuthConstants
 import com.google.firebase.messaging.FirebaseMessaging
@@ -41,6 +42,12 @@ object AppModule {
     @Singleton
     fun providesCurrentLocationCoordinates(): CurrentLocationCoordinates {
         return CurrentLocationCoordinates(0.00, 0.00)
+    }
+
+    @Provides
+    @Singleton
+    fun providesFcmToken(): FCMToken {
+        return FCMToken()
     }
 
 }

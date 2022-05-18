@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import app.streats.client.core.presentation.OrderScreen
 import app.streats.client.core.presentation.screens.ErrorScreen
 import app.streats.client.core.util.CoreScreens
 import app.streats.client.feature_auth.presentation.login_screen.LoginScreen
@@ -16,8 +15,10 @@ import app.streats.client.feature_cart.util.CartScreens
 import app.streats.client.feature_home.presentation.home_screen.HomeScreen
 import app.streats.client.feature_home.presentation.shop_screen.ShopScreen
 import app.streats.client.feature_home.util.HomeScreens
+import app.streats.client.feature_order.presentation.order_history.OrderHistoryScreen
 import app.streats.client.feature_order.presentation.order_status.OrderFailure
 import app.streats.client.feature_order.presentation.order_status.OrderSuccess
+import app.streats.client.feature_order.util.OrderScreens
 
 @Composable
 fun Navigation(navController: NavHostController) {
@@ -51,6 +52,13 @@ fun Navigation(navController: NavHostController) {
                             navController.popBackStack()
                         }
                     }
+                },
+                onLoginError = {
+                    navController.navigate(CoreScreens.ErrorScreen.route) {
+                        while (navController.backQueue.isEmpty().not()) {
+                            navController.popBackStack()
+                        }
+                    }
                 }
             )
         }
@@ -65,21 +73,32 @@ fun Navigation(navController: NavHostController) {
                     navController.navigate(HomeScreens.ShopScreen.route + "/${it.shopId}")
                 },
                 onLoggedOut = {
-                    navController.popBackStack()
-                    navController.navigate(AuthScreens.LoginScreen.route)
+                    navController.navigate(AuthScreens.LoginScreen.route) {
+                        while (navController.backQueue.isEmpty().not()) {
+                            navController.popBackStack()
+                        }
+                    }
                 }
             )
         }
 
         composable(CartScreens.CartScreen.route) {
             CartScreen(
-                onOrderFailure = { navController.navigate("order_failure") },
-                onOrderSuccess = { navController.navigate("order_success") })
+                onOrderFailure = {
+                    navController.navigate(OrderScreens.OrderFailureScreen.route) {
+                        popUpTo(HomeScreens.HomeScreen.route)
+
+                    }
+                },
+                onOrderSuccess = {
+                    navController.navigate(OrderScreens.OrderSuccessScreen.route) {
+                        popUpTo(HomeScreens.HomeScreen.route)
+                    }
+                })
         }
 
-//        TODO : Refactor to OrderScreens.OrderScreen.route
-        composable("orders_screen") {
-            OrderScreen()
+        composable(OrderScreens.OrderHistoryScreen.route) {
+            OrderHistoryScreen()
         }
 
         composable(HomeScreens.ShopScreen.route + "/{shopId}") {
@@ -90,11 +109,11 @@ fun Navigation(navController: NavHostController) {
             ErrorScreen()
         }
 
-        composable(route = "order_success") {
+        composable(route = OrderScreens.OrderSuccessScreen.route) {
             OrderSuccess()
         }
 
-        composable(route = "order_failure") {
+        composable(route = OrderScreens.OrderFailureScreen.route) {
             OrderFailure()
         }
 

@@ -25,7 +25,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
         </activity>
+
+        <service android:name=".feature_notification.NotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+
+            </intent-filter>
+        </service>
+
 
         <activity android:name=".feature_cart.presentation.activities.CheckoutActivity" />
 

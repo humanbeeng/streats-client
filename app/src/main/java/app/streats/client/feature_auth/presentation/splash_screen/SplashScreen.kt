@@ -22,18 +22,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.flow.collectLatest
 
-/**
- *TODO : Refactor to navigate only when
- *  1. All permissions are granted
- *  2. Token is fetched
- *  3. Current Location is fetched
- *
- */
 @Composable
 fun SplashScreen(
     splashScreenViewModel: SplashScreenViewModel = hiltViewModel(),
     onLoggedIn: () -> Unit,
-    onLoggedOut: () -> Unit
+    onLoggedOut: () -> Unit,
 ) {
 
     val permissionState = splashScreenViewModel.permissionState.value
@@ -47,7 +40,10 @@ fun SplashScreen(
 //    Request for permissions
     PermissionsUI(splashScreenViewModel)
 
+//    Add a subscriber for incoming SplashScreenUIEvents
     LaunchedEffect(key1 = Unit) {
+        splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.LaunchSplash)
+
         outgoingSplashScreenEventUIEventFlow.collectLatest { event ->
             when (event) {
                 is SplashScreenEvent.AuthSuccess -> onLoggedIn()
@@ -57,21 +53,25 @@ fun SplashScreen(
 
     }
 
-    LaunchedEffect(key1 = Unit) {
-        splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.LaunchSplash(context = context))
-
-    }
 
     LaunchedEffect(key1 = permissionState.hasAllPermissions, block = {
-        if(permissionState.hasAllPermissions) {
+        if (permissionState.hasAllPermissions) {
             splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.FetchLocation(context))
         }
     })
 
-    LaunchedEffect(key1 = (currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions)) {
-        if (loginState.isLoggedIn && currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions) {
+//    TODO : If possible, refactor this SplashScreen's LaunchedEffect
+    LaunchedEffect(
+        key1 = (currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions)
+    ) {
+        if (
+            loginState.isLoggedIn && currentLocationState.isSuccessful &&
+            tokenState.isSuccessful && permissionState.hasAllPermissions
+        ) {
             splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.Authenticate)
-        } else if (loginState.isLoggedIn.not() && currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions) {
+        } else if (loginState.isLoggedIn.not() && currentLocationState.isSuccessful && tokenState.isSuccessful &&
+            permissionState.hasAllPermissions
+        ) {
             onLoggedOut()
         }
     }
@@ -152,7 +152,6 @@ fun PermissionsUI(
     }
 
 //    Launch permissions dialogue ON_START of Activity
-
     val lifecycleOwner = LocalLifecycleOwner.current
 
 

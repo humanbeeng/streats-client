@@ -5,27 +5,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import app.streats.client.core.presentation.components.BottomNavItem
 import app.streats.client.core.presentation.components.BottomNavigationBar
 import app.streats.client.core.presentation.components.Navigation
 import app.streats.client.core.presentation.ui.theme.StreatsTheme
+import app.streats.client.feature_cart.util.CartScreens
 import app.streats.client.feature_home.util.HomeScreens
+import app.streats.client.feature_order.util.OrderScreens
 import dagger.hilt.android.AndroidEntryPoint
 
+
+/**
+ * TODO : Resolve navigation issue of BottomNavBar
+ *
+ * TODO : Remove AppBar from application
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,13 +58,13 @@ class MainActivity : ComponentActivity() {
                                 ),
                                 BottomNavItem(
                                     name = "Cart",
-                                    route = "cart_screen",
+                                    route = CartScreens.CartScreen.route,
                                     icon = Icons.Default.ShoppingCart,
                                     badgeCount = 3
                                 ),
                                 BottomNavItem(
                                     name = "Orders",
-                                    route = "orders_screen",
+                                    route = OrderScreens.OrderHistoryScreen.route,
                                     icon = Icons.Default.List
                                 )
                             ),
@@ -72,7 +74,10 @@ class MainActivity : ComponentActivity() {
                                 interactionSource = interactionSource,
                                 onClick = {}),
                             onItemClick = {
-                                navController.navigate(it.route)
+                                navController.navigate(it.route) {
+                                    popUpTo(HomeScreens.HomeScreen.route)
+
+                                }
                             }
                         )
                     }
@@ -86,18 +91,3 @@ class MainActivity : ComponentActivity() {
 }
 
 
-/**
- * TODO : Move to Cart & Order Package
- */
-
-
-@Composable
-fun OrderScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Order Screen")
-    }
-}

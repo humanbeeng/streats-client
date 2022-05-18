@@ -7,16 +7,20 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.streats.client.core.util.AccessToken
-import app.streats.client.core.util.Constants.ERROR_MESSAGE
-import app.streats.client.core.util.Constants.FCM_TOKEN_PREF
+import app.streats.client.core.domain.models.AccessToken
+import app.streats.client.core.domain.models.FCMToken
+import app.streats.client.core.util.CoreConstants.EMPTY
+import app.streats.client.core.util.CoreConstants.ERROR_MESSAGE
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
 import app.streats.client.feature_auth.presentation.login_screen.LoginState
 import app.streats.client.feature_auth.presentation.permissions.PermissionState
 import app.streats.client.feature_auth.util.AuthConstants
+import app.streats.client.feature_auth.util.AuthConstants.FCM_TOKEN_PREF
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,7 +39,8 @@ class SplashScreenViewModel @Inject constructor(
     private val accessToken: AccessToken,
     private val authRepository: AuthRepository,
     private val firebaseMessaging: FirebaseMessaging,
-    private val currentLocationCoordinates: CurrentLocationCoordinates
+    private val currentLocationCoordinates: CurrentLocationCoordinates,
+    private val fcmToken: FCMToken
 ) : ViewModel() {
 
     private val _loginState = mutableStateOf(LoginState())
@@ -112,64 +117,56 @@ class SplashScreenViewModel @Inject constructor(
         return _permissionState.value.hasAllPermissions
     }
 
-    //    TODO : Refactor this method
-//    TODO : Fix error retrieving currentLocation Exception
+    //    TODO : Fix error retrieving currentLocation Exception
     @SuppressLint("MissingPermission")
     private fun retrieveCurrentLocation(context: Context) {
+        Timber.d("Retrieve Current Location called")
 
         if (allPermissionsGranted()) {
             val fusedLocationProviderClient =
                 LocationServices.getFusedLocationProviderClient(context)
 
-            try {
-                fusedLocationProviderClient.lastLocation
-                    .addOnSuccessListener { currentLocationTask ->
-                        _currentLocationState.value =
-                            CurrentLocationState(
-                                currentLocationCoordinates = CurrentLocationCoordinates(
-                                    currentLocationTask.latitude,
-                                    currentLocationTask.longitude
-                                ),
-                                isLoading = false,
-                                isSuccessful = true
-                            )
+            fusedLocationProviderClient.getCurrentLocation(
+                LocationRequest.PRIORITY_HIGH_ACCURACY,
+                CancellationTokenSource().token
+            ).addOnCompleteListener { currentLocationTask ->
+                if (currentLocationTask.isSuccessful) {
+                    _currentLocationState.value =
+                        CurrentLocationState(
+                            currentLocationCoordinates = CurrentLocationCoordinates(
+                                currentLocationTask.result.latitude,
+                                currentLocationTask.result.longitude
+                            ),
+                            isLoading = false,
+                            isSuccessful = true
+                        )
 
-                        currentLocationCoordinates.latitude = currentLocationTask.latitude
-                        currentLocationCoordinates.longitude = currentLocationTask.longitude
+                    currentLocationCoordinates.latitude = currentLocationTask.result.latitude
+                    currentLocationCoordinates.longitude = currentLocationTask.result.longitude
+                } else {
+                    _currentLocationState.value =
+                        CurrentLocationState(
+                            currentLocationCoordinates = CurrentLocationCoordinates(
+                                currentLocationTask.result.latitude,
+                                currentLocationTask.result.longitude
+                            ),
+                            isLoading = false,
+                            isSuccessful = false
+                        )
 
-
-                        Timber.d("Current Location Updated ${_currentLocationState.value.currentLocationCoordinates}")
-                    }
-            } catch (e: Exception) {
-                _currentLocationState.value =
-                    CurrentLocationState(
-                        currentLocationCoordinates = CurrentLocationCoordinates(
-                            0.00,
-                            0.00
-                        ), isSuccessful = false, isLoading = false
-                    )
+                }
+                Timber.d("${_currentLocationState.value.currentLocationCoordinates}")
 
             }
-        } else {
-            _currentLocationState.value =
-                CurrentLocationState(
-                    currentLocationCoordinates = CurrentLocationCoordinates(
-                        0.00,
-                        0.00
-                    ), isSuccessful = false, isLoading = false
-                )
         }
-
 
     }
 
     private fun isUserLoggedIn(): Boolean {
-
         return (firebaseAuth.currentUser != null && sharedPreferences.getString(
             AuthConstants.ACCESS_TOKEN_PREF,
-            ""
+            EMPTY
         ).isNullOrBlank().not())
-
     }
 
 
@@ -179,8 +176,6 @@ class SplashScreenViewModel @Inject constructor(
         } else {
             _loginState.value = LoginState(isLoggedIn = false, isLoading = false)
         }
-        Timber.d("UserState ${_loginState.value}")
-
     }
 
 
@@ -191,11 +186,11 @@ class SplashScreenViewModel @Inject constructor(
                     FcmTokenState(fcmToken = tokenTask.toString(), isSuccessful = true)
 
                 sharedPreferences.edit().putString(FCM_TOKEN_PREF, tokenTask).apply()
-
-                Timber.d("FCM Token State updated: ${_fcmTokenState.value} ")
+                fcmToken.value = tokenTask.toString()
             }
         } catch (e: Exception) {
             _fcmTokenState.value = FcmTokenState(error = ERROR_MESSAGE, isSuccessful = false)
+            fcmToken.value = EMPTY
         }
     }
 }

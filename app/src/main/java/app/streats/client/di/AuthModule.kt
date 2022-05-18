@@ -1,6 +1,6 @@
 package app.streats.client.di
 
-import app.streats.client.core.util.Constants
+import app.streats.client.core.util.CoreConstants
 import app.streats.client.feature_auth.data.AuthApi
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
@@ -33,7 +33,7 @@ object AuthModule {
     fun provideAuthApi(): AuthApi {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(Constants.SERVER_BASE_URL)
+            .baseUrl(CoreConstants.SERVER_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(AuthApi::class.java)

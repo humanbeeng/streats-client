@@ -23,7 +23,8 @@ import timber.log.Timber
 @Composable
 fun LoginScreen(
     loginScreenViewModel: LoginScreenViewModel = hiltViewModel(),
-    onLoggedIn: () -> Unit = {}
+    onLoggedIn: () -> Unit,
+    onLoginError: () -> Unit
 ) {
 
     val loginState = loginScreenViewModel.loginState.value
@@ -31,9 +32,9 @@ fun LoginScreen(
     LaunchedEffect(key1 = true) {
         loginScreenViewModel.outgoingEventFlow.collectLatest { event ->
             when (event) {
-                is UIEvent.Navigate -> {
-                    onLoggedIn()
-                }
+                is UIEvent.Navigate -> onLoggedIn()
+                is UIEvent.Error -> onLoginError()
+                is UIEvent.Loading -> {}
             }
         }
     }
@@ -46,7 +47,8 @@ fun LoginScreen(
                 try {
                     loginScreenViewModel.loginEventHandler(LoginEvent.Login(task))
                 } catch (e: Exception) {
-                    Timber.w("Exception occurred ${e.localizedMessage}")
+                    onLoginError()
+                    Timber.e("Exception occurred ${e.localizedMessage}")
                 }
 
             }
@@ -76,4 +78,5 @@ fun LoginScreen(
         }
     }
 }
+
 
