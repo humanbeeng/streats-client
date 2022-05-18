@@ -11,7 +11,7 @@ import app.streats.client.feature_cart.util.CheckoutConstants.PARAM_TRANSACTION_
 import app.streats.client.feature_cart.util.CheckoutConstants.PARAM_USERNAME
 import app.streats.client.feature_cart.util.CheckoutConstants.PAYMENT_CALLBACK_URL
 import app.streats.client.feature_cart.util.PaymentEnums
-import app.streats.client.feature_order.data.dto.OrderDTO
+import app.streats.client.feature_order.data.dto.CheckoutDTO
 import com.cashfree.pg.CFPaymentService.*
 import timber.log.Timber
 
@@ -32,7 +32,7 @@ class CheckoutActivity : Activity() {
 
         Timber.d("token : $cftoken")
 
-        val order = OrderDTO(
+        val order = CheckoutDTO(
             username = username!!,
             email = email!!,
             orderId = orderId!!,
@@ -69,23 +69,23 @@ class CheckoutActivity : Activity() {
     }
 
 
-    private fun startPayment(order: OrderDTO) {
+    private fun startPayment(checkout: CheckoutDTO) {
         val cfInstance = getCFPaymentServiceInstance()
         cfInstance.setOrientation(0)
         val paymentObject = HashMap<String, String>()
 
 // TODO : Replace dummy phone number
-        paymentObject[PARAM_APP_ID] = order.appId
-        paymentObject[PARAM_ORDER_ID] = order.orderId
-        paymentObject[PARAM_ORDER_CURRENCY] = order.orderCurrency
-        paymentObject[PARAM_ORDER_AMOUNT] = order.orderAmount
+        paymentObject[PARAM_APP_ID] = checkout.appId
+        paymentObject[PARAM_ORDER_ID] = checkout.orderId
+        paymentObject[PARAM_ORDER_CURRENCY] = checkout.orderCurrency
+        paymentObject[PARAM_ORDER_AMOUNT] = checkout.orderAmount
         paymentObject[PARAM_CUSTOMER_PHONE] = DUMMY_PHONE_NUMBER
-        paymentObject[PARAM_CUSTOMER_NAME] = order.username
-        paymentObject[PARAM_CUSTOMER_EMAIL] = order.email
+        paymentObject[PARAM_CUSTOMER_NAME] = checkout.username
+        paymentObject[PARAM_CUSTOMER_EMAIL] = checkout.email
         paymentObject[PARAM_NOTIFY_URL] = PAYMENT_CALLBACK_URL
 //
 //
-        cfInstance.upiPayment(this, paymentObject, order.cftoken, order.stage)
+        cfInstance.upiPayment(this, paymentObject, checkout.cftoken, checkout.stage)
 
 
     }
