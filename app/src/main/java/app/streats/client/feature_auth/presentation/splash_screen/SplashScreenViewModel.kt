@@ -11,13 +11,13 @@ import app.streats.client.core.domain.models.AccessToken
 import app.streats.client.core.domain.models.FCMToken
 import app.streats.client.core.util.CoreConstants.EMPTY
 import app.streats.client.core.util.CoreConstants.ERROR_MESSAGE
-import app.streats.client.core.util.CoreConstants.FCM_TOKEN_PREF
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
 import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
 import app.streats.client.feature_auth.presentation.login_screen.LoginState
 import app.streats.client.feature_auth.presentation.permissions.PermissionState
 import app.streats.client.feature_auth.util.AuthConstants
+import app.streats.client.feature_auth.util.AuthConstants.FCM_TOKEN_PREF
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource

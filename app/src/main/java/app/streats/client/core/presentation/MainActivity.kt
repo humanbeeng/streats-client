@@ -91,8 +91,3 @@ class MainActivity : ComponentActivity() {
 }
 
 
-/**
- * TODO : Move to Cart & Order Package
- */
-
-

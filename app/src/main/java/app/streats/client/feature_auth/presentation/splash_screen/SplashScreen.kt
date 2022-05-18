@@ -60,10 +60,18 @@ fun SplashScreen(
         }
     })
 
-    LaunchedEffect(key1 = (currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions)) {
-        if (loginState.isLoggedIn && currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions) {
+//    TODO : If possible, refactor this SplashScreen's LaunchedEffect
+    LaunchedEffect(
+        key1 = (currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions)
+    ) {
+        if (
+            loginState.isLoggedIn && currentLocationState.isSuccessful &&
+            tokenState.isSuccessful && permissionState.hasAllPermissions
+        ) {
             splashScreenViewModel.splashScreenEventHandler(SplashScreenRequest.Authenticate)
-        } else if (loginState.isLoggedIn.not() && currentLocationState.isSuccessful && tokenState.isSuccessful && permissionState.hasAllPermissions) {
+        } else if (loginState.isLoggedIn.not() && currentLocationState.isSuccessful && tokenState.isSuccessful &&
+            permissionState.hasAllPermissions
+        ) {
             onLoggedOut()
         }
     }

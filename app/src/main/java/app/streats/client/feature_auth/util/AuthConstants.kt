@@ -10,6 +10,8 @@ object AuthConstants {
 
     const val ACCESS_TOKEN_PREF = "AccessToken"
 
+    const val FCM_TOKEN_PREF = "FCMToken"
+
     const val AUTH_REQUEST_FAILURE = "Auth failed"
 
     const val AUTH_REQUEST_SUCCESS = "Auth Successful"
