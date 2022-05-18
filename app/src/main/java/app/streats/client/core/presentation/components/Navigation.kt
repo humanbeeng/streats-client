@@ -84,8 +84,17 @@ fun Navigation(navController: NavHostController) {
 
         composable(CartScreens.CartScreen.route) {
             CartScreen(
-                onOrderFailure = { navController.navigate(OrderScreens.OrderFailureScreen.route) },
-                onOrderSuccess = { navController.navigate(OrderScreens.OrderSuccessScreen.route) })
+                onOrderFailure = {
+                    navController.navigate(OrderScreens.OrderFailureScreen.route) {
+                        popUpTo(HomeScreens.HomeScreen.route)
+
+                    }
+                },
+                onOrderSuccess = {
+                    navController.navigate(OrderScreens.OrderSuccessScreen.route) {
+                        popUpTo(HomeScreens.HomeScreen.route)
+                    }
+                })
         }
 
         composable(OrderScreens.OrderHistoryScreen.route) {
