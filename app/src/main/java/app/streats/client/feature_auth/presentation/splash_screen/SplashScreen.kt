@@ -8,23 +8,28 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
-import androidx.compose.material.Surface
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.core.location.LocationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import app.streats.client.R
 import app.streats.client.feature_auth.presentation.permissions.PermissionState
+import com.airbnb.lottie.compose.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -45,8 +50,46 @@ fun SplashScreen(
     val shouldAlert = remember { mutableStateOf(false) }
 
 
-//    Request for permissions
+    var isPlaying by remember {
+        mutableStateOf(true)
+    }
 
+    val speed by remember {
+        mutableStateOf(1f)
+    }
+
+
+    // remember lottie composition ,which
+    // accepts the lottie composition result
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec
+            .RawRes(R.raw.location_2)
+    )
+
+
+    // to control the animation
+    val progress by animateLottieCompositionAsState(
+        // pass the composition created above
+        composition,
+
+        // Iterates Forever
+        iterations = LottieConstants.IterateForever,
+
+        // pass isPlaying we created above,
+        // changing isPlaying will recompose
+        // Lottie and pause/play
+        isPlaying = isPlaying,
+
+        speed = speed,
+
+        // this makes animation to restart when paused and play
+        // pass false to continue the animation at which is was paused
+        restartOnPlay = false
+
+    )
+
+
+//    Request for permissions
     PermissionsUI(splashScreenViewModel)
 
     if (shouldAlert.value) {
@@ -83,8 +126,14 @@ fun SplashScreen(
 
         outgoingSplashScreenEventUIEventFlow.collectLatest { event ->
             when (event) {
-                is SplashScreenEvent.AuthSuccess -> onLoggedIn()
-                is SplashScreenEvent.AuthFailed -> onLoggedOut()
+                is SplashScreenEvent.AuthSuccess -> {
+                    delay(500)
+                    onLoggedIn()
+                }
+                is SplashScreenEvent.AuthFailed -> {
+                    delay(200)
+                    onLoggedOut()
+                }
             }
         }
 
@@ -119,14 +168,20 @@ fun SplashScreen(
 
 
 //  TODO : Move this to different Composable
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(), topBar = {},
+        backgroundColor = Color.Black
+    ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text("SplashScreen")
-
+            LottieAnimation(
+                composition,
+                progress,
+                modifier = Modifier.size(100.dp)
+            )
         }
 
     }
