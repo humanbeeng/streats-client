@@ -68,11 +68,11 @@ dependencies {
     platform 'com.google.firebase:firebase-bom:29.3.1'
     implementation 'com.google.firebase:firebase-analytics-ktx:20.1.2'
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
-    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
+    implementation 'com.google.firebase:firebase-inappmessaging-display-ktx:20.1.2'
 
     //    Cashfree
     implementation 'com.cashfree.pg:android-sdk:1.7.15'
-
 
 
     //    Retrofit
