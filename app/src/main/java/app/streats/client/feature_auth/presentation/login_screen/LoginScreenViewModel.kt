@@ -11,7 +11,7 @@ import app.streats.client.core.presentation.events.UIEvent
 import app.streats.client.core.util.CoreConstants.EMPTY
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
-import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
+import app.streats.client.feature_auth.domain.models.CurrentLocation
 import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_LOGIN_FAILURE
 import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_LOGIN_SUCCESS
 import app.streats.client.feature_auth.util.AuthConstants.GOOGLE_SIGN_IN_TOKEN_PREF
@@ -41,7 +41,7 @@ class LoginScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val sharedPreferences: SharedPreferences,
     private val firebaseAuth: FirebaseAuth,
-    private val currentLocationCoordinates: CurrentLocationCoordinates,
+    private val currentLocation: CurrentLocation,
     private val accessToken: AccessToken,
     private val fcmToken: FCMToken
 ) : ViewModel() {
@@ -94,7 +94,7 @@ class LoginScreenViewModel @Inject constructor(
                                         val token = idTokenTask.result.token!!
 
                                         authRepository.login(
-                                            currentLocationCoordinates,
+                                            currentLocation,
                                             fcmToken.value,
                                             token
                                         ).onEach { state ->

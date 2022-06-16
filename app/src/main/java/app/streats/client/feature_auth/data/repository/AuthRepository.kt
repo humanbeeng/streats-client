@@ -8,7 +8,7 @@ import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.AuthApi
 import app.streats.client.feature_auth.data.dto.AuthRequestDTO
 import app.streats.client.feature_auth.data.dto.LoginRequestDTO
-import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
+import app.streats.client.feature_auth.domain.models.CurrentLocation
 import app.streats.client.feature_auth.util.AuthConstants
 import app.streats.client.feature_auth.util.AuthConstants.AUTH_REQUEST_FAILURE
 import app.streats.client.feature_auth.util.AuthConstants.AUTH_REQUEST_SUCCESS
@@ -29,7 +29,7 @@ class AuthRepository @Inject constructor(
 
 
     fun login(
-        currentLocationCoordinates: CurrentLocationCoordinates,
+        currentLocation: CurrentLocation,
         fcmToken: String,
         idToken: String
     ): Flow<Resource<String>> {
@@ -39,7 +39,7 @@ class AuthRepository @Inject constructor(
                 emit(Resource.Loading())
 
                 val loginResponse =
-                    api.login(LoginRequestDTO(currentLocationCoordinates, fcmToken, idToken))
+                    api.login(LoginRequestDTO(currentLocation.toCurrentLocationCoordinates(), fcmToken, idToken))
 
                 if (loginResponse.isSuccessful) {
                     loginResponse.body()?.let {
@@ -76,7 +76,7 @@ class AuthRepository @Inject constructor(
     fun authenticate(
         accessToken: String,
         fcmToken: String,
-        currentLocationCoordinates: CurrentLocationCoordinates
+        currentLocation: CurrentLocation
     ): Flow<Resource<String>> {
         return flow {
             try {
@@ -85,7 +85,7 @@ class AuthRepository @Inject constructor(
                 val authResponse =
                     api.authenticate(
                         accessToken,
-                        AuthRequestDTO(currentLocationCoordinates, accessToken, fcmToken)
+                        AuthRequestDTO(currentLocation.toCurrentLocationCoordinates(), accessToken, fcmToken)
                     )
 
                 if (authResponse.isSuccessful) {
