@@ -12,6 +12,8 @@ import app.streats.client.feature_cart.presentation.cart_screen.CartState
 import app.streats.client.feature_home.data.repository.ShopRepository
 import app.streats.client.feature_home.util.HomeConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -31,6 +33,12 @@ class ShopScreenViewModel @Inject constructor(
 
     private val _cartState = mutableStateOf(CartState())
     val cartState: State<CartState> = _cartState
+
+    private val _isItemAdded = MutableSharedFlow<Boolean>()
+    val isItemAdded = _isItemAdded.asSharedFlow()
+
+    private val _isItemRemoved = MutableSharedFlow<Boolean>()
+    val isItemRemoved = _isItemAdded.asSharedFlow()
 
     init {
         savedStateHandle.get<String>(HomeConstants.PARAM_STREATS_SHOP_ID)
@@ -77,15 +85,17 @@ class ShopScreenViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     _cartState.value = CartState(data = state.data)
+                    _isItemAdded.emit(true)
                 }
                 is Resource.Error -> {
                     Timber.e(state.message.toString())
                     _cartState.value =
                         CartState(isLoading = false, error = HomeConstants.HOME_ERROR_MESSAGE)
+                    _isItemAdded.emit(false)
 
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
 
@@ -97,15 +107,16 @@ class ShopScreenViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     _cartState.value = CartState(data = state.data)
+                    _isItemRemoved.emit(true)
                 }
                 is Resource.Error -> {
                     Timber.e(state.message.toString())
                     _cartState.value =
                         CartState(isLoading = false, error = HomeConstants.HOME_ERROR_MESSAGE)
-
+                    _isItemRemoved.emit(false)
                 }
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
 }
