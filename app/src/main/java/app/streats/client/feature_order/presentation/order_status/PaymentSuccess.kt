@@ -9,12 +9,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import app.streats.client.R
 import app.streats.client.core.presentation.ui.theme.LightGrayBackground
+import app.streats.client.core.presentation.ui.theme.OrderConfirmationText
 import app.streats.client.core.presentation.ui.theme.SectionHeading
 import com.airbnb.lottie.compose.*
 import kotlinx.coroutines.delay
 
 @Composable
-fun OrderSuccess(onNavigate: () -> Unit) {
+fun PaymentSuccess(onNavigate: () -> Unit) {
     Scaffold(modifier = Modifier.fillMaxSize(), backgroundColor = LightGrayBackground) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -29,9 +30,9 @@ fun OrderSuccess(onNavigate: () -> Unit) {
                 mutableStateOf(1f)
             }
 
-
+//            Wait for 10s and navigate back to HomeScreen
             LaunchedEffect(key1 = Unit) {
-                delay(5000)
+                delay(10000)
                 onNavigate()
             }
 
@@ -76,25 +77,15 @@ fun OrderSuccess(onNavigate: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "Order Placed .", style = SectionHeading)
+                Text(text = "Payment successful .", style = SectionHeading)
             }
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp), horizontalArrangement = Arrangement.Center
+                    .fillMaxWidth(), horizontalArrangement = Arrangement.Center
             ) {
-//                Button(
-//                    onClick = { onRetry() },
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(70.dp)
-//                        .padding(10.dp)
-//                ) {
-//                    Text(text = "Retry")
-//                }
+                Text(text = "You will be receiving order confirmation notification .", style = OrderConfirmationText)
             }
-
 
         }
 

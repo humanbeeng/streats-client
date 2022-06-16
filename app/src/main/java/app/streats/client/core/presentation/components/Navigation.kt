@@ -1,6 +1,8 @@
 package app.streats.client.core.presentation.components
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,14 +18,18 @@ import app.streats.client.feature_home.presentation.home_screen.HomeScreen
 import app.streats.client.feature_home.presentation.shop_screen.ShopScreen
 import app.streats.client.feature_home.util.HomeScreens
 import app.streats.client.feature_order.presentation.order_history.OrderHistoryScreen
-import app.streats.client.feature_order.presentation.order_status.OrderFailure
-import app.streats.client.feature_order.presentation.order_status.OrderSuccess
+import app.streats.client.feature_order.presentation.order_status.PaymentFailure
+import app.streats.client.feature_order.presentation.order_status.PaymentSuccess
 import app.streats.client.feature_order.util.OrderScreens
 
 @Composable
-fun Navigation(navController: NavHostController) {
+fun Navigation(navController: NavHostController, modifier: Modifier = Modifier.fillMaxSize()) {
 
-    NavHost(navController = navController, startDestination = AuthScreens.SplashScreen.route) {
+    NavHost(
+        navController = navController,
+        startDestination = AuthScreens.SplashScreen.route,
+        modifier = Modifier.fillMaxSize()
+    ) {
 
         composable(AuthScreens.SplashScreen.route) {
             SplashScreen(
@@ -78,22 +84,28 @@ fun Navigation(navController: NavHostController) {
                             navController.popBackStack()
                         }
                     }
+                },
+                onCartClicked = {
+                    navController.navigate(CartScreens.CartScreen.route)
                 }
             )
         }
 
         composable(CartScreens.CartScreen.route) {
             CartScreen(
-                onOrderFailure = {
+                onPaymentFailure = {
                     navController.navigate(OrderScreens.OrderFailureScreen.route) {
                         popUpTo(HomeScreens.HomeScreen.route)
 
                     }
                 },
-                onOrderSuccess = {
+                onPaymentSuccess = {
                     navController.navigate(OrderScreens.OrderSuccessScreen.route) {
                         popUpTo(HomeScreens.HomeScreen.route)
                     }
+                },
+                onGoBack = {
+                    navController.popBackStack()
                 })
         }
 
@@ -102,7 +114,9 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(HomeScreens.ShopScreen.route + "/{shopId}") {
-            ShopScreen()
+            ShopScreen {
+                navController.navigate(CartScreens.CartScreen.route)
+            }
         }
 
         composable(CoreScreens.ErrorScreen.route) {
@@ -110,11 +124,15 @@ fun Navigation(navController: NavHostController) {
         }
 
         composable(route = OrderScreens.OrderSuccessScreen.route) {
-            OrderSuccess()
+            PaymentSuccess(onNavigate = {
+                navController.navigate(HomeScreens.HomeScreen.route)
+            })
         }
 
         composable(route = OrderScreens.OrderFailureScreen.route) {
-            OrderFailure()
+            PaymentFailure(onNavigate = {
+                navController.navigate(HomeScreens.HomeScreen.route)
+            })
         }
 
     }
