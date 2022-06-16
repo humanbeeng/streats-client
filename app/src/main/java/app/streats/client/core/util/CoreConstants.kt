@@ -18,4 +18,6 @@ object CoreConstants {
 
     const val DUMMY_PHONE_NUMBER = "9999999999"
 
+    const val Rupees = "₹"
+
 }
