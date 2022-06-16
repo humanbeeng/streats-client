@@ -41,7 +41,7 @@ class CartRepository @Inject constructor(
                 emit(Resource.Error(message = CartConstants.CART_ERROR_MESSAGE))
 
             } catch (e: IOException) {
-                Timber.e(e.localizedMessage.toString())
+                Timber.e(e.localizedMessage?.toString() ?: "")
                 emit(
                     Resource.Error(
                         message = CartConstants.CART_ERROR_MESSAGE
