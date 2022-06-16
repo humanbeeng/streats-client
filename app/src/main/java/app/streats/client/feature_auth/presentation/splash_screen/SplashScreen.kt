@@ -8,7 +8,6 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
@@ -19,17 +18,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.location.LocationManagerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import app.streats.client.R
+import app.streats.client.core.presentation.components.Loader
+import app.streats.client.core.presentation.ui.theme.Tangerine
 import app.streats.client.feature_auth.presentation.permissions.PermissionState
-import com.airbnb.lottie.compose.*
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -63,7 +66,7 @@ fun SplashScreen(
     // accepts the lottie composition result
     val composition by rememberLottieComposition(
         LottieCompositionSpec
-            .RawRes(R.raw.location_2)
+            .RawRes(R.raw.loader)
     )
 
 
@@ -127,11 +130,9 @@ fun SplashScreen(
         outgoingSplashScreenEventUIEventFlow.collectLatest { event ->
             when (event) {
                 is SplashScreenEvent.AuthSuccess -> {
-                    delay(500)
                     onLoggedIn()
                 }
                 is SplashScreenEvent.AuthFailed -> {
-                    delay(200)
                     onLoggedOut()
                 }
             }
@@ -167,24 +168,8 @@ fun SplashScreen(
     }
 
 
-//  TODO : Move this to different Composable
-    Scaffold(
-        modifier = Modifier.fillMaxSize(), topBar = {},
-        backgroundColor = Color.Black
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            LottieAnimation(
-                composition,
-                progress,
-                modifier = Modifier.size(100.dp)
-            )
-        }
+    SplashScreenUI()
 
-    }
 }
 
 
@@ -263,6 +248,27 @@ fun PermissionsUI(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
+}
+
+@Composable
+@Preview
+fun SplashScreenUI() {
+
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        backgroundColor = Tangerine
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Loader(backgroundColor = Color.Transparent)
+        }
+
+    }
+
 }
 
 private fun isLocationEnabled(context: Context): Boolean {

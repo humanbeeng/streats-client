@@ -3,6 +3,8 @@ package app.streats.client.feature_auth.presentation.splash_screen
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Geocoder
+import android.location.Location
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -13,7 +15,7 @@ import app.streats.client.core.util.CoreConstants.EMPTY
 import app.streats.client.core.util.CoreConstants.ERROR_MESSAGE
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
-import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
+import app.streats.client.feature_auth.domain.models.CurrentLocation
 import app.streats.client.feature_auth.presentation.login_screen.LoginState
 import app.streats.client.feature_auth.presentation.permissions.PermissionState
 import app.streats.client.feature_auth.util.AuthConstants
@@ -21,6 +23,7 @@ import app.streats.client.feature_auth.util.AuthConstants.FCM_TOKEN_PREF
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +32,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
@@ -39,7 +43,7 @@ class SplashScreenViewModel @Inject constructor(
     private val accessToken: AccessToken,
     private val authRepository: AuthRepository,
     private val firebaseMessaging: FirebaseMessaging,
-    private val currentLocationCoordinates: CurrentLocationCoordinates,
+    private val currentLocation: CurrentLocation,
     private val fcmToken: FCMToken
 ) : ViewModel() {
 
@@ -88,7 +92,7 @@ class SplashScreenViewModel @Inject constructor(
                     _isAuthCalled.value = true
                     authRepository.authenticate(
                         accessToken.value,
-                        currentLocationCoordinates = currentLocationCoordinates,
+                        currentLocation = currentLocation,
                         fcmToken = _fcmTokenState.value.fcmToken
                     ).onEach { requestState ->
                         when (requestState) {
@@ -127,35 +131,23 @@ class SplashScreenViewModel @Inject constructor(
                 LocationServices.getFusedLocationProviderClient(context)
 
             fusedLocationProviderClient.getCurrentLocation(
-                LocationRequest.PRIORITY_HIGH_ACCURACY,
+                LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
                 CancellationTokenSource().token
             ).addOnCompleteListener { currentLocationTask ->
                 if (currentLocationTask.isSuccessful) {
-                    _currentLocationState.value =
-                        CurrentLocationState(
-                            currentLocationCoordinates = CurrentLocationCoordinates(
-                                currentLocationTask.result.latitude,
-                                currentLocationTask.result.longitude
-                            ),
-                            isLoading = false,
-                            isSuccessful = true
-                        )
-
-                    currentLocationCoordinates.latitude = currentLocationTask.result.latitude
-                    currentLocationCoordinates.longitude = currentLocationTask.result.longitude
+                    updateUserLocation(context, currentLocationTask)
                 } else {
                     _currentLocationState.value =
                         CurrentLocationState(
-                            currentLocationCoordinates = CurrentLocationCoordinates(
-                                currentLocationTask.result.latitude,
-                                currentLocationTask.result.longitude
+                            currentLocation = CurrentLocation(
+                                0.00, 0.00
                             ),
                             isLoading = false,
-                            isSuccessful = false
+                            isSuccessful = false,
+                            subLocality = EMPTY
                         )
 
                 }
-                Timber.d("${_currentLocationState.value.currentLocationCoordinates}")
 
             }
         }
@@ -169,6 +161,26 @@ class SplashScreenViewModel @Inject constructor(
         ).isNullOrBlank().not())
     }
 
+    private fun updateUserLocation(context: Context, currentLocationTask: Task<Location>) {
+
+        val latitude = currentLocationTask.result.latitude
+        val longitude = currentLocationTask.result.longitude
+
+        val geocoder = Geocoder(context, Locale.US)
+        val subLocality = geocoder.getFromLocation(latitude, longitude, 1).first().subLocality
+
+        _currentLocationState.value = CurrentLocationState(
+            currentLocation = CurrentLocation(
+                latitude, longitude, subLocality
+            ),
+            isLoading = false,
+            isSuccessful = true,
+        )
+
+        currentLocation.latitude = currentLocationTask.result.latitude
+        currentLocation.longitude = currentLocationTask.result.longitude
+        currentLocation.subLocality = subLocality
+    }
 
     private fun updateUserLoggedInState() {
         if (isUserLoggedIn()) {
