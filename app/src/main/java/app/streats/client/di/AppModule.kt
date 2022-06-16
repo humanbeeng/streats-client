@@ -5,7 +5,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import app.streats.client.core.domain.models.AccessToken
 import app.streats.client.core.domain.models.FCMToken
-import app.streats.client.feature_auth.domain.models.CurrentLocationCoordinates
+import app.streats.client.feature_auth.domain.models.CurrentLocation
 import app.streats.client.feature_auth.util.AuthConstants
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.Module
@@ -40,8 +40,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providesCurrentLocationCoordinates(): CurrentLocationCoordinates {
-        return CurrentLocationCoordinates(0.00, 0.00)
+    fun providesCurrentLocationCoordinates(): CurrentLocation {
+        return CurrentLocation(0.00, 0.00)
     }
 
     @Provides
