@@ -10,6 +10,7 @@ import android.media.AudioAttributes
 import android.media.RingtoneManager
 import android.net.Uri
 import androidx.core.app.NotificationCompat
+import app.streats.client.R
 import app.streats.client.core.presentation.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -50,7 +51,7 @@ class NotificationService : FirebaseMessagingService() {
         val channelId = "orders"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(com.airbnb.lottie.R.drawable.abc_ic_star_black_48dp)
+            .setSmallIcon(R.drawable.opened_tick)
             .setContentTitle("Streats")
             .setContentText(messageBody)
             .setAutoCancel(true)
