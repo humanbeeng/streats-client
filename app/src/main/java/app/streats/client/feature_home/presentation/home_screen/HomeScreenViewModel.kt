@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.streats.client.core.util.Resource
 import app.streats.client.feature_auth.data.repository.AuthRepository
+import app.streats.client.feature_auth.domain.models.CurrentLocation
 import app.streats.client.feature_home.data.repository.HomeRepository
 import app.streats.client.feature_home.util.HomeConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,17 +21,18 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val homeRepository: HomeRepository,
+    val currentLocation: CurrentLocation
 ) : ViewModel() {
 
-    private val _outgoingHomeScreenEventFlow = MutableSharedFlow<HomeEvent>()
+    private val _outgoingHomeScreenEventFlow = MutableSharedFlow<HomeOutgoingEvent>()
     val outgoingHomeScreenEventFlow = _outgoingHomeScreenEventFlow.asSharedFlow()
 
     private val _homeState = mutableStateOf(HomeScreenState())
     val homeState: State<HomeScreenState> = _homeState
 
-
     init {
         getHome()
+
     }
 
     fun homeEventListener(event: HomeEvent) {
@@ -38,6 +40,7 @@ class HomeScreenViewModel @Inject constructor(
             is HomeEvent.Logout -> {
                 logout()
             }
+            HomeEvent.Refresh -> getHome()
         }
     }
 
@@ -66,7 +69,7 @@ class HomeScreenViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch {
             authRepository.logout()
-            _outgoingHomeScreenEventFlow.emit(HomeEvent.Logout)
+            _outgoingHomeScreenEventFlow.emit(HomeOutgoingEvent.Logout)
         }
     }
 
