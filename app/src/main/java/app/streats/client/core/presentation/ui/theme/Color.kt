@@ -4,7 +4,20 @@ import androidx.compose.ui.graphics.Color
 
 //TODO : Add common theme for application
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+
+val LightGrayBackground = Color(0xFFF5F5F5)
+
+val DarkGrayBackground = Color(0xFF3D3D3D)
+
+val LightBlack = Color(0xFF1F1F1F)
+
+val CulturedWhite = Color(0XFFF5F5F5)
+
+val Tangerine = Color(0xFFE67D0D)
+
+val CardBackground = Color(0xFFFCFCFC)
+
+val LightGrayText = Color(0XFF858585)
+
+val SuccessGreen = Color(0xFF30A878)
+
